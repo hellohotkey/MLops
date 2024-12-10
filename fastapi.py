@@ -1,5 +1,6 @@
 import os
 import pickle
+import pandas as pd
 from pydantic import BaseModel, conlist
 from typing import List
 from fastapi import FastAPI, Body
@@ -7,8 +8,9 @@ from fastapi import FastAPI, Body
 # Load model and trains
 with open("model.pkl", "rb") as f:
     model = pickle.load(f)
-with open("trains.pkl", "rb") as f:
-    trains = pickle.load(f)
+
+with open("transform.pkl","rb") as f:
+    trans = pickle.load(f)
 
 class Dataset(BaseModel):
     data: List
@@ -16,11 +18,15 @@ class Dataset(BaseModel):
 app = FastAPI()
 
 @app.post("/predict")
-def get_prediction(dataset: Dataset):
-    data = dict(dataset)["data"]
-    prediction = model.predict(data).tolist()
-    log_proba = model.predict_proba(data).tolist()
-    return {"prediction": prediction, "log_proba": log_proba}
+def get_prediction(dat: Dataset):
+    data = dict(dat)["data"][0]
+    data = pd.DataFrame(data=[data.values()], columns=data.keys())
+    trans_x = trans.transform(data)
+    prediction = model.predict(trans_x).tolist()
+    log_proba = model.predict_proba(trans_x).tolist()
+    result = {"prediction": prediction, "log_proba": log_proba}
+    return result
+
 
 if __name__ == "__main__":
     print("test")
