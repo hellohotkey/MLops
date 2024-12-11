@@ -30,3 +30,6 @@ def get_prediction(dat: Dataset):
 
 if __name__ == "__main__":
     print("test")
+
+# pip install fastapi uvicorn
+# uvicorn main:app --reload
