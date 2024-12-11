@@ -9,7 +9,7 @@ from fastapi import FastAPI, Body
 with open("model.pkl", "rb") as f:
     model = pickle.load(f)
 
-with open("transform.pkl","rb") as f:
+with open("trains.pkl","rb") as f:
     trans = pickle.load(f)
 
 class Dataset(BaseModel):
